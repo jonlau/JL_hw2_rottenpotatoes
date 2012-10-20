@@ -8,16 +8,29 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #debugger
+    @all_ratings = Movie.ratings
     sort = params[:sort_by]
-        #debugger
+    @ratings_list = params[:ratings]    #stores what checkboxes user has checked
+    p params
+    p @ratings_list
+
+    if @ratings_list.nil? then #if empty, return empty hash (not nil)
+      @ratings_list = @all_ratings 
+    elsif @ratings_list.is_a?(Hash) then
+      @ratings_list = @ratings_list.keys  
+    end  
+        
     if sort == "name" then 
-      @movies = Movie.all(:order => 'title')
+      p @ratings_list
+      @movies = Movie.find_all_by_rating(@ratings_list, :order => 'title')
       @title_style = 'hilite'
     elsif sort=="date" 
-      @movies = Movie.all(:order => 'release_date asc')
+      p @ratings_list
+      @movies = Movie.find_all_by_rating(@ratings_list, :order => 'release_date asc')
       @rdate_style = 'hilite'
     else
-      @movies = Movie.all
+      @movies = Movie.find(:all, :conditions => {:rating =>  @ratings_list})
     end
 
   end
